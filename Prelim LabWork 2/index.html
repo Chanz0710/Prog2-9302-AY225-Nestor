@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Attendance Quest</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="panel">
+
+    <!-- LOGIN -->
+    <section id="loginSection">
+        <h1 class="title bounce">GET READY!</h1>
+        <p class="subtitle">UPHSD Molino Attendance Quest</p>
+
+        <div id="pixelCharacter" class="avatar">🧭</div>
+
+        <div id="loginError" class="error"></div>
+
+        <form id="loginForm">
+            <input id="username" placeholder="Character Name" required>
+            <input id="password" type="password" placeholder="Secret Rune" required>
+            <button class="btn">START QUEST</button>
+        </form>
+
+        <p class="hint">
+            traveler · knight · mage · goblin · guardian
+        </p>
+    </section>
+
+    <!-- SUCCESS -->
+    <section id="successSection" class="hidden">
+        <h1 class="title">LEVEL CLEARED!</h1>
+        <div id="successMessage" class="success-box"></div>
+
+        <button class="btn" id="historyBtn">VIEW RECORDS</button>
+        <button class="btn" id="backBtn">BACK TO CAMP</button>
+    </section>
+
+    <!-- HISTORY -->
+    <section id="historySection" class="hidden">
+        <h1 class="title">QUEST LOG</h1>
+        <p id="recordCount"></p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>CHARACTER</th>
+                    <th>TIME IN</th>
+                </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+        </table>
+
+        <button class="btn" id="exportBtn">DOWNLOAD SCROLL (CSV)</button>
+        <button class="btn danger" id="clearBtn">CLEAR LOG</button>
+        <button class="btn" id="backFromHistoryBtn">BACK</button>
+    </section>
+
+</div>
+
+<!-- FOREGROUND / GROUND -->
+<div class="ground"></div>
+
+<script src="script.js"></script>
+</body>
+</html>

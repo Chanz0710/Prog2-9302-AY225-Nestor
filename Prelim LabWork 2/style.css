@@ -1,0 +1,130 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Press Start 2P', cursive;
+    background: #0f4c5c;
+    color: white;
+    min-height: 100vh;
+    padding-bottom: 80px;
+}
+
+/* MAIN PANEL */
+.panel {
+    max-width: 520px;
+    margin: 60px auto;
+    border: 4px solid white;
+    padding: 30px;
+    text-align: center;
+    background: #123f52;
+}
+
+.title {
+    color: gold;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 10px;
+    margin-bottom: 15px;
+}
+
+.bounce {
+    animation: bounce 1.2s infinite;
+}
+
+@keyframes bounce {
+    50% { transform: translateY(-10px); }
+}
+
+/* CHARACTER */
+.avatar {
+    font-size: 42px;
+    margin: 10px 0;
+}
+
+.jump {
+    animation: jump 0.4s;
+}
+
+@keyframes jump {
+    50% { transform: translateY(-15px); }
+}
+
+/* FORM */
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    font-family: inherit;
+}
+
+.btn {
+    width: 100%;
+    padding: 14px;
+    margin-top: 10px;
+    font-family: inherit;
+    background: #1e90ff;
+    color: white;
+    border: 3px solid white;
+    cursor: pointer;
+}
+
+.danger {
+    background: crimson;
+}
+
+.error {
+    display: none;
+    background: red;
+    padding: 8px;
+    font-size: 10px;
+    margin-bottom: 8px;
+}
+
+.success-box {
+    border: 3px solid lime;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.hint {
+    font-size: 9px;
+    margin-top: 10px;
+}
+
+.hidden {
+    display: none;
+}
+
+/* TABLE */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    font-size: 10px;
+}
+
+th, td {
+    border: 2px solid white;
+    padding: 6px;
+}
+
+/* FOREGROUND */
+.ground {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    background: repeating-linear-gradient(
+        90deg,
+        #3b8d2f,
+        #3b8d2f 40px,
+        #4caf50 40px,
+        #4caf50 80px
+    )
+}
