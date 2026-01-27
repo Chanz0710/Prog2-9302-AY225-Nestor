@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prelim Grade Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <div class="container fade-in">
+        <div class="header">
+            <div class="icon-wrapper zoom-in">
+                <span class="icon">✨</span>
+            </div>
+            <h1 class="slide-down">Prelim Grade Calculator</h1>
+            <p class="subtitle slide-up">Calculate your required Prelim Exam score with style</p>
+        </div>
+        
+        <div class="card slide-up-delay-1">
+            <div class="input-section">
+                <h2 class="section-title">
+                    <span class="section-icon">📊</span>
+                    Student Information
+                </h2>
+                
+                <div class="input-group">
+                    <label for="attendance">
+                        <span class="label-icon">👥</span>
+                        Number of Attendances
+                    </label>
+                    <input type="number" id="attendance" class="input-field" placeholder="Enter attendance count" min="0" step="0.01">
+                </div>
+                
+                <div class="input-group">
+                    <label for="lab1">
+                        <span class="label-icon">📝</span>
+                        Lab Work 1 Grade
+                    </label>
+                    <input type="number" id="lab1" class="input-field" placeholder="Enter Lab 1 grade (0-100)" min="0" max="100" step="0.01">
+                </div>
+                
+                <div class="input-group">
+                    <label for="lab2">
+                        <span class="label-icon">📝</span>
+                        Lab Work 2 Grade
+                    </label>
+                    <input type="number" id="lab2" class="input-field" placeholder="Enter Lab 2 grade (0-100)" min="0" max="100" step="0.01">
+                </div>
+                
+                <div class="input-group">
+                    <label for="lab3">
+                        <span class="label-icon">📝</span>
+                        Lab Work 3 Grade
+                    </label>
+                    <input type="number" id="lab3" class="input-field" placeholder="Enter Lab 3 grade (0-100)" min="0" max="100" step="0.01">
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="calculateGrade()">
+                        <span class="btn-icon">🧮</span>
+                        Calculate
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearFields()">
+                        <span class="btn-icon">🔄</span>
+                        Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="error-message" id="errorMessage"></div>
+        
+        <div class="card results-card" id="outputSection">
+            <div class="results-header">
+                <span class="results-icon">📈</span>
+                <h2>Calculation Results</h2>
+            </div>
+            
+            <div class="results-grid">
+                <div class="result-group">
+                    <h3 class="result-group-title">
+                        <span class="group-icon">📥</span>
+                        Input Values
+                    </h3>
+                    <div class="result-item">
+                        <span class="result-label">Attendance Score:</span>
+                        <span class="result-value" id="displayAttendance">--</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Lab Work 1:</span>
+                        <span class="result-value" id="displayLab1">--</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Lab Work 2:</span>
+                        <span class="result-value" id="displayLab2">--</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Lab Work 3:</span>
+                        <span class="result-value" id="displayLab3">--</span>
+                    </div>
+                </div>
+                
+                <div class="result-group">
+                    <h3 class="result-group-title">
+                        <span class="group-icon">🔢</span>
+                        Computed Values
+                    </h3>
+                    <div class="result-item highlight">
+                        <span class="result-label">Lab Work Average:</span>
+                        <span class="result-value" id="displayLabAvg">--</span>
+                    </div>
+                    <div class="result-item highlight">
+                        <span class="result-label">Class Standing:</span>
+                        <span class="result-value" id="displayClassStanding">--</span>
+                    </div>
+                </div>
+                
+                <div class="result-group">
+                    <h3 class="result-group-title">
+                        <span class="group-icon">🎯</span>
+                        Required Prelim Exam Scores
+                    </h3>
+                    <div class="result-item important">
+                        <span class="result-label">To Pass (75):</span>
+                        <span class="result-value" id="displayPassScore">--</span>
+                    </div>
+                    <div class="result-item important">
+                        <span class="result-label">To Achieve Excellent (100):</span>
+                        <span class="result-value" id="displayExcellentScore">--</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="remarks-section" id="remarksSection"></div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
