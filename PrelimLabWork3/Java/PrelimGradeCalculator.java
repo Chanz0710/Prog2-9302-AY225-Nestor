@@ -5,6 +5,7 @@ import java.awt.event.*;
 public class PrelimGradeCalculator extends JFrame {
     // Input fields
     private JTextField attendanceField;
+    private JTextField excusedAbsencesField;
     private JTextField lab1Field;
     private JTextField lab2Field;
     private JTextField lab3Field;
@@ -18,7 +19,7 @@ public class PrelimGradeCalculator extends JFrame {
     
     public PrelimGradeCalculator() {
         setTitle("Prelim Grade Calculator");
-        setSize(600, 550);
+        setSize(600, 580);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         
@@ -35,12 +36,16 @@ public class PrelimGradeCalculator extends JFrame {
         
         // Input panel
         JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new GridLayout(4, 2, 10, 10));
+        inputPanel.setLayout(new GridLayout(5, 2, 10, 10));
         inputPanel.setBorder(BorderFactory.createTitledBorder("Student Information"));
         
-        inputPanel.add(new JLabel("Number of Attendances:"));
+        inputPanel.add(new JLabel("Number of Attendances (out of 5):"));
         attendanceField = new JTextField();
         inputPanel.add(attendanceField);
+        
+        inputPanel.add(new JLabel("Excused Absences (if any):"));
+        excusedAbsencesField = new JTextField("0");
+        inputPanel.add(excusedAbsencesField);
         
         inputPanel.add(new JLabel("Lab Work 1 Grade:"));
         lab1Field = new JTextField();
@@ -74,7 +79,7 @@ public class PrelimGradeCalculator extends JFrame {
         outputPanel.setLayout(new BorderLayout());
         outputPanel.setBorder(BorderFactory.createTitledBorder("Results"));
         
-        outputArea = new JTextArea(12, 40);
+        outputArea = new JTextArea(14, 40);
         outputArea.setEditable(false);
         outputArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
         JScrollPane scrollPane = new JScrollPane(outputArea);
@@ -99,32 +104,44 @@ public class PrelimGradeCalculator extends JFrame {
             try {
                 // Get input values
                 double attendance = Double.parseDouble(attendanceField.getText().trim());
+                double excusedAbsences = Double.parseDouble(excusedAbsencesField.getText().trim());
                 double lab1 = Double.parseDouble(lab1Field.getText().trim());
                 double lab2 = Double.parseDouble(lab2Field.getText().trim());
                 double lab3 = Double.parseDouble(lab3Field.getText().trim());
                 
+                // Calculate absences automatically
+                double absences = 5 - attendance;
+                
                 // Validate inputs
-                if (attendance < 0 || lab1 < 0 || lab1 > 100 || 
+                if (attendance < 0 || attendance > 5 || excusedAbsences < 0 ||
+                    excusedAbsences > absences || lab1 < 0 || lab1 > 100 || 
                     lab2 < 0 || lab2 > 100 || lab3 < 0 || lab3 > 100) {
                     JOptionPane.showMessageDialog(PrelimGradeCalculator.this,
                         "Please enter valid values:\n" +
-                        "- Attendance: non-negative number\n" +
+                        "- Attendance: 0-5\n" +
+                        "- Excused Absences: 0 to " + absences + " (total absences)\n" +
                         "- Lab grades: 0-100",
                         "Invalid Input",
                         JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 
+                // Calculate unexcused absences
+                double unexcusedAbsences = absences - excusedAbsences;
+                
+                // Check if student failed due to absences
+                boolean failedByAbsence = unexcusedAbsences >= 3;
+                
+                // Calculate attendance score (20 points per attendance)
+                double attendanceScore = attendance * 20;
+                
                 // Calculate Lab Work Average
                 double labWorkAverage = (lab1 + lab2 + lab3) / 3.0;
                 
                 // Calculate Class Standing
-                double classStanding = (attendance * 0.40) + (labWorkAverage * 0.60);
+                double classStanding = (attendanceScore * 0.40) + (labWorkAverage * 0.60);
                 
                 // Calculate required Prelim Exam scores
-                // Corrected formula: Prelim Grade = (Prelim Exam × 0.30) + (Class Standing × 0.70)
-                // For Passing (75): 75 = (Prelim Exam × 0.30) + (Class Standing × 0.70)
-                // Prelim Exam = (75 - Class Standing × 0.70) / 0.30
                 double requiredForPass = (75 - (classStanding * 0.70)) / 0.30;
                 double requiredForExcellent = (100 - (classStanding * 0.70)) / 0.30;
                 
@@ -134,8 +151,14 @@ public class PrelimGradeCalculator extends JFrame {
                 output.append("           PRELIM GRADE CALCULATION RESULTS\n");
                 output.append("═══════════════════════════════════════════════════\n\n");
                 
-                output.append("INPUT VALUES:\n");
-                output.append(String.format("  Attendance Score: %.2f\n", attendance));
+                output.append("ATTENDANCE INFORMATION:\n");
+                output.append(String.format("  Days Present: %.0f out of 5\n", attendance));
+                output.append(String.format("  Total Absences: %.0f\n", absences));
+                output.append(String.format("  Excused Absences: %.0f\n", excusedAbsences));
+                output.append(String.format("  Unexcused Absences: %.0f\n", unexcusedAbsences));
+                output.append(String.format("  Attendance Score: %.2f (%.0f × 20)\n\n", attendanceScore, attendance));
+                
+                output.append("LAB WORK GRADES:\n");
                 output.append(String.format("  Lab Work 1: %.2f\n", lab1));
                 output.append(String.format("  Lab Work 2: %.2f\n", lab2));
                 output.append(String.format("  Lab Work 3: %.2f\n\n", lab3));
@@ -144,51 +167,66 @@ public class PrelimGradeCalculator extends JFrame {
                 output.append(String.format("  Lab Work Average: %.2f\n", labWorkAverage));
                 output.append(String.format("  Class Standing: %.2f\n\n", classStanding));
                 
-                output.append("REQUIRED PRELIM EXAM SCORES:\n");
-                
-                // Display required score for passing
-                if (requiredForPass <= 0) {
-                    output.append("  To Pass (75): Already achieved\n");
-                } else if (requiredForPass > 100) {
-                    output.append(String.format("  To Pass (75): Impossible (would need %.2f)\n", requiredForPass));
+                // Check if failed by absence first
+                if (failedByAbsence) {
+                    output.append("═══════════════════════════════════════════════════\n");
+                    output.append("                 ⚠️  FAILED STATUS  ⚠️\n");
+                    output.append("═══════════════════════════════════════════════════\n\n");
+                    output.append("REMARKS:\n");
+                    output.append(String.format("  ❌ AUTOMATIC FAILURE: You have %.0f unexcused\n", unexcusedAbsences));
+                    output.append("     absences (3 or more).\n\n");
+                    output.append("  According to the attendance policy, having 3 or\n");
+                    output.append("  more unexcused absences results in an automatic\n");
+                    output.append("  FAILING grade for the Prelim period, regardless\n");
+                    output.append("  of exam and lab work scores.\n\n");
+                    output.append("  ⚠️  You CANNOT pass this Prelim period.\n");
                 } else {
-                    output.append(String.format("  To Pass (75): %.2f\n", requiredForPass));
-                }
-                
-                // Display required score for excellent
-                if (requiredForExcellent <= 0) {
-                    output.append("  To Achieve Excellent (100): Already achieved\n\n");
-                } else if (requiredForExcellent > 100) {
-                    output.append("  To Achieve Excellent (100): Impossible\n\n");
-                } else {
-                    output.append(String.format("  To Achieve Excellent (100): %.2f\n\n", requiredForExcellent));
-                }
-                
-                output.append("REMARKS:\n");
-                
-                if (requiredForPass <= 0) {
-                    output.append("  ★ Congratulations! You have already secured\n");
-                    output.append("    a passing grade based on your Class Standing.\n");
-                    output.append("    Even with 0 on the Prelim Exam, you will pass!\n");
-                } else if (requiredForPass > 100) {
-                    output.append("  ⚠ Unfortunately, it is mathematically impossible\n");
-                    output.append("    to achieve a passing grade of 75.\n");
-                    output.append("    Maximum possible Prelim Grade: ");
-                    double maxGrade = (100 * 0.30) + (classStanding * 0.70);
-                    output.append(String.format("%.2f\n", maxGrade));
-                } else {
-                    output.append(String.format("  • You need to score %.2f or higher on the\n", requiredForPass));
-                    output.append("    Prelim Exam to pass the Prelim period.\n");
-                }
-                
-                if (requiredForExcellent <= 0) {
-                    output.append("  ★ You have already achieved an excellent standing!\n");
-                } else if (requiredForExcellent > 100) {
-                    output.append("  • Achieving an excellent grade (100) is not possible\n");
-                    output.append("    based on your current Class Standing.\n");
-                } else if (requiredForExcellent <= 100 && requiredForPass <= 100) {
-                    output.append(String.format("  • To achieve excellent standing (100), you need\n"));
-                    output.append(String.format("    to score %.2f on the Prelim Exam.\n", requiredForExcellent));
+                    output.append("REQUIRED PRELIM EXAM SCORES:\n");
+                    
+                    // Display required score for passing
+                    if (requiredForPass <= 0) {
+                        output.append("  To Pass (75): Already achieved\n");
+                    } else if (requiredForPass > 100) {
+                        output.append(String.format("  To Pass (75): Impossible (would need %.2f)\n", requiredForPass));
+                    } else {
+                        output.append(String.format("  To Pass (75): %.2f\n", requiredForPass));
+                    }
+                    
+                    // Display required score for excellent
+                    if (requiredForExcellent <= 0) {
+                        output.append("  To Achieve Excellent (100): Already achieved\n\n");
+                    } else if (requiredForExcellent > 100) {
+                        output.append("  To Achieve Excellent (100): Impossible\n\n");
+                    } else {
+                        output.append(String.format("  To Achieve Excellent (100): %.2f\n\n", requiredForExcellent));
+                    }
+                    
+                    output.append("REMARKS:\n");
+                    output.append(String.format("  ✅ Attendance Status: PASSING (%.0f unexcused absences)\n\n", unexcusedAbsences));
+                    
+                    if (requiredForPass <= 0) {
+                        output.append("  ⭐ Congratulations! You have already secured\n");
+                        output.append("     a passing grade based on your Class Standing.\n");
+                        output.append("     Even with 0 on the Prelim Exam, you will pass!\n");
+                    } else if (requiredForPass > 100) {
+                        output.append("  ⚠️  Unfortunately, it is mathematically impossible\n");
+                        output.append("     to achieve a passing grade of 75.\n");
+                        double maxGrade = (100 * 0.30) + (classStanding * 0.70);
+                        output.append(String.format("     Maximum possible Prelim Grade: %.2f\n", maxGrade));
+                    } else {
+                        output.append(String.format("  • You need to score %.2f or higher on the\n", requiredForPass));
+                        output.append("    Prelim Exam to pass the Prelim period.\n");
+                    }
+                    
+                    if (requiredForExcellent <= 0) {
+                        output.append("  ⭐ You have already achieved an excellent standing!\n");
+                    } else if (requiredForExcellent > 100) {
+                        output.append("  • Achieving an excellent grade (100) is not possible\n");
+                        output.append("    based on your current Class Standing.\n");
+                    } else if (requiredForExcellent <= 100 && requiredForPass <= 100) {
+                        output.append(String.format("  • To achieve excellent standing (100), you need\n"));
+                        output.append(String.format("    to score %.2f on the Prelim Exam.\n", requiredForExcellent));
+                    }
                 }
                 
                 output.append("\n═══════════════════════════════════════════════════");
@@ -207,6 +245,7 @@ public class PrelimGradeCalculator extends JFrame {
     private class ClearListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             attendanceField.setText("");
+            excusedAbsencesField.setText("0");
             lab1Field.setText("");
             lab2Field.setText("");
             lab3Field.setText("");
