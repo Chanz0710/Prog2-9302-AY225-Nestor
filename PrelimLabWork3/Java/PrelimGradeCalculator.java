@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.text.*;
 
 public class PrelimGradeCalculator extends JFrame {
     // Input fields
@@ -19,7 +20,7 @@ public class PrelimGradeCalculator extends JFrame {
     
     public PrelimGradeCalculator() {
         setTitle("Prelim Grade Calculator");
-        setSize(600, 580);
+        setSize(600, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         
@@ -40,23 +41,24 @@ public class PrelimGradeCalculator extends JFrame {
         inputPanel.setBorder(BorderFactory.createTitledBorder("Student Information"));
         
         inputPanel.add(new JLabel("Number of Attendances (out of 5):"));
-        attendanceField = new JTextField();
+        attendanceField = createIntegerOnlyField();
         inputPanel.add(attendanceField);
         
         inputPanel.add(new JLabel("Excused Absences (if any):"));
-        excusedAbsencesField = new JTextField("0");
+        excusedAbsencesField = createIntegerOnlyField();
+        excusedAbsencesField.setText("0");
         inputPanel.add(excusedAbsencesField);
         
-        inputPanel.add(new JLabel("Lab Work 1 Grade:"));
-        lab1Field = new JTextField();
+        inputPanel.add(new JLabel("Lab Work 1 Grade (whole numbers only):"));
+        lab1Field = createIntegerOnlyField();
         inputPanel.add(lab1Field);
         
-        inputPanel.add(new JLabel("Lab Work 2 Grade:"));
-        lab2Field = new JTextField();
+        inputPanel.add(new JLabel("Lab Work 2 Grade (whole numbers only):"));
+        lab2Field = createIntegerOnlyField();
         inputPanel.add(lab2Field);
         
-        inputPanel.add(new JLabel("Lab Work 3 Grade:"));
-        lab3Field = new JTextField();
+        inputPanel.add(new JLabel("Lab Work 3 Grade (whole numbers only):"));
+        lab3Field = createIntegerOnlyField();
         inputPanel.add(lab3Field);
         
         // Button panel
@@ -99,18 +101,39 @@ public class PrelimGradeCalculator extends JFrame {
         add(mainPanel);
     }
     
+    // Create a text field that only accepts integers (no decimals)
+    private JTextField createIntegerOnlyField() {
+        JTextField field = new JTextField();
+        ((AbstractDocument) field.getDocument()).setDocumentFilter(new DocumentFilter() {
+            @Override
+            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+                if (string != null && string.matches("\\d*")) {
+                    super.insertString(fb, offset, string, attr);
+                }
+            }
+            
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                if (text != null && text.matches("\\d*")) {
+                    super.replace(fb, offset, length, text, attrs);
+                }
+            }
+        });
+        return field;
+    }
+    
     private class CalculateListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             try {
                 // Get input values
-                double attendance = Double.parseDouble(attendanceField.getText().trim());
-                double excusedAbsences = Double.parseDouble(excusedAbsencesField.getText().trim());
-                double lab1 = Double.parseDouble(lab1Field.getText().trim());
-                double lab2 = Double.parseDouble(lab2Field.getText().trim());
-                double lab3 = Double.parseDouble(lab3Field.getText().trim());
+                int attendance = Integer.parseInt(attendanceField.getText().trim());
+                int excusedAbsences = Integer.parseInt(excusedAbsencesField.getText().trim());
+                int lab1 = Integer.parseInt(lab1Field.getText().trim());
+                int lab2 = Integer.parseInt(lab2Field.getText().trim());
+                int lab3 = Integer.parseInt(lab3Field.getText().trim());
                 
                 // Calculate absences automatically
-                double absences = 5 - attendance;
+                int absences = 5 - attendance;
                 
                 // Validate inputs
                 if (attendance < 0 || attendance > 5 || excusedAbsences < 0 ||
@@ -120,26 +143,26 @@ public class PrelimGradeCalculator extends JFrame {
                         "Please enter valid values:\n" +
                         "- Attendance: 0-5\n" +
                         "- Excused Absences: 0 to " + absences + " (total absences)\n" +
-                        "- Lab grades: 0-100",
+                        "- Lab grades: 0-100 (whole numbers only)",
                         "Invalid Input",
                         JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 
                 // Calculate unexcused absences
-                double unexcusedAbsences = absences - excusedAbsences;
+                int unexcusedAbsences = absences - excusedAbsences;
                 
-                // Check if student failed due to absences
-                boolean failedByAbsence = unexcusedAbsences >= 3;
+                // Calculate attendance percentage (100% - 20% per unexcused absence)
+                double attendancePercentage = 100.0 - (unexcusedAbsences * 20.0);
                 
-                // Calculate attendance score (20 points per attendance)
-                double attendanceScore = attendance * 20;
+                // Check if student failed due to attendance (below 20% = 4 or more unexcused absences)
+                boolean failedByAttendance = attendancePercentage < 20.0;
                 
                 // Calculate Lab Work Average
                 double labWorkAverage = (lab1 + lab2 + lab3) / 3.0;
                 
-                // Calculate Class Standing
-                double classStanding = (attendanceScore * 0.40) + (labWorkAverage * 0.60);
+                // Calculate Class Standing (using attendance percentage)
+                double classStanding = (attendancePercentage * 0.40) + (labWorkAverage * 0.60);
                 
                 // Calculate required Prelim Exam scores
                 double requiredForPass = (75 - (classStanding * 0.70)) / 0.30;
@@ -152,33 +175,36 @@ public class PrelimGradeCalculator extends JFrame {
                 output.append("═══════════════════════════════════════════════════\n\n");
                 
                 output.append("ATTENDANCE INFORMATION:\n");
-                output.append(String.format("  Days Present: %.0f out of 5\n", attendance));
-                output.append(String.format("  Total Absences: %.0f\n", absences));
-                output.append(String.format("  Excused Absences: %.0f\n", excusedAbsences));
-                output.append(String.format("  Unexcused Absences: %.0f\n", unexcusedAbsences));
-                output.append(String.format("  Attendance Score: %.2f (%.0f × 20)\n\n", attendanceScore, attendance));
+                output.append(String.format("  Days Present: %d out of 5\n", attendance));
+                output.append(String.format("  Total Absences: %d\n", absences));
+                output.append(String.format("  Excused Absences: %d\n", excusedAbsences));
+                output.append(String.format("  Unexcused Absences: %d\n", unexcusedAbsences));
+                output.append(String.format("  Attendance Percentage: %.2f%%\n", attendancePercentage));
+                output.append(String.format("  (100%% - %d unexcused × 20%%)\n\n", unexcusedAbsences));
                 
                 output.append("LAB WORK GRADES:\n");
-                output.append(String.format("  Lab Work 1: %.2f\n", lab1));
-                output.append(String.format("  Lab Work 2: %.2f\n", lab2));
-                output.append(String.format("  Lab Work 3: %.2f\n\n", lab3));
+                output.append(String.format("  Lab Work 1: %d\n", lab1));
+                output.append(String.format("  Lab Work 2: %d\n", lab2));
+                output.append(String.format("  Lab Work 3: %d\n\n", lab3));
                 
                 output.append("COMPUTED VALUES:\n");
                 output.append(String.format("  Lab Work Average: %.2f\n", labWorkAverage));
                 output.append(String.format("  Class Standing: %.2f\n\n", classStanding));
                 
-                // Check if failed by absence first
-                if (failedByAbsence) {
+                // Check if failed by attendance first
+                if (failedByAttendance) {
                     output.append("═══════════════════════════════════════════════════\n");
                     output.append("                 ⚠️  FAILED STATUS  ⚠️\n");
                     output.append("═══════════════════════════════════════════════════\n\n");
                     output.append("REMARKS:\n");
-                    output.append(String.format("  ❌ AUTOMATIC FAILURE: You have %.0f unexcused\n", unexcusedAbsences));
-                    output.append("     absences (3 or more).\n\n");
-                    output.append("  According to the attendance policy, having 3 or\n");
-                    output.append("  more unexcused absences results in an automatic\n");
-                    output.append("  FAILING grade for the Prelim period, regardless\n");
-                    output.append("  of exam and lab work scores.\n\n");
+                    output.append(String.format("  ❌ AUTOMATIC FAILURE: Your attendance is %.2f%%\n", attendancePercentage));
+                    output.append("     (below the required 20%).\n\n");
+                    output.append(String.format("  You have %d unexcused absences out of 5 sessions.\n", unexcusedAbsences));
+                    output.append("  Each unexcused absence deducts 20%% from attendance.\n\n");
+                    output.append("  According to the attendance policy, having 4 or more\n");
+                    output.append("  unexcused absences (less than 20%% attendance) results\n");
+                    output.append("  in an automatic FAILING grade for the Prelim period,\n");
+                    output.append("  regardless of exam and lab work scores.\n\n");
                     output.append("  ⚠️  You CANNOT pass this Prelim period.\n");
                 } else {
                     output.append("REQUIRED PRELIM EXAM SCORES:\n");
@@ -202,7 +228,7 @@ public class PrelimGradeCalculator extends JFrame {
                     }
                     
                     output.append("REMARKS:\n");
-                    output.append(String.format("  ✅ Attendance Status: PASSING (%.0f unexcused absences)\n\n", unexcusedAbsences));
+                    output.append(String.format("  ✅ Attendance Status: PASSING (%.2f%%)\n\n", attendancePercentage));
                     
                     if (requiredForPass <= 0) {
                         output.append("  ⭐ Congratulations! You have already secured\n");
@@ -235,7 +261,8 @@ public class PrelimGradeCalculator extends JFrame {
                 
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(PrelimGradeCalculator.this,
-                    "Please enter valid numeric values in all fields.",
+                    "Please enter valid numeric values in all fields.\n" +
+                    "Note: Only whole numbers are allowed (no decimals).",
                     "Invalid Input",
                     JOptionPane.ERROR_MESSAGE);
             }
