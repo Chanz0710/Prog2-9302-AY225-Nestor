@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prelim Grade Calculator</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2.0">
 </head>
 <body>
     <div class="particles" id="particles"></div>
@@ -28,33 +28,41 @@
                 <div class="input-group">
                     <label for="attendance">
                         <span class="label-icon">👥</span>
-                        Number of Attendances
+                        Number of Attendances (out of 5)
                     </label>
-                    <input type="number" id="attendance" class="input-field" placeholder="Enter attendance count" min="0" step="0.01">
+                    <input type="number" id="attendance" class="input-field" placeholder="Enter days present (0-5)" min="0" max="5" step="1">
+                </div>
+                
+                <div class="input-group">
+                    <label for="excusedAbsences">
+                        <span class="label-icon">📋</span>
+                        Excused Absences (if any)
+                    </label>
+                    <input type="number" id="excusedAbsences" class="input-field" placeholder="Enter excused absences" min="0" value="0" step="1">
                 </div>
                 
                 <div class="input-group">
                     <label for="lab1">
                         <span class="label-icon">📝</span>
-                        Lab Work 1 Grade
+                        Lab Work 1 Grade (whole numbers only)
                     </label>
-                    <input type="number" id="lab1" class="input-field" placeholder="Enter Lab 1 grade (0-100)" min="0" max="100" step="0.01">
+                    <input type="number" id="lab1" class="input-field" placeholder="Enter Lab 1 grade (0-100)" min="0" max="100" step="1">
                 </div>
                 
                 <div class="input-group">
                     <label for="lab2">
                         <span class="label-icon">📝</span>
-                        Lab Work 2 Grade
+                        Lab Work 2 Grade (whole numbers only)
                     </label>
-                    <input type="number" id="lab2" class="input-field" placeholder="Enter Lab 2 grade (0-100)" min="0" max="100" step="0.01">
+                    <input type="number" id="lab2" class="input-field" placeholder="Enter Lab 2 grade (0-100)" min="0" max="100" step="1">
                 </div>
                 
                 <div class="input-group">
                     <label for="lab3">
                         <span class="label-icon">📝</span>
-                        Lab Work 3 Grade
+                        Lab Work 3 Grade (whole numbers only)
                     </label>
-                    <input type="number" id="lab3" class="input-field" placeholder="Enter Lab 3 grade (0-100)" min="0" max="100" step="0.01">
+                    <input type="number" id="lab3" class="input-field" placeholder="Enter Lab 3 grade (0-100)" min="0" max="100" step="1">
                 </div>
                 
                 <div class="button-group">
@@ -82,12 +90,35 @@
                 <div class="result-group">
                     <h3 class="result-group-title">
                         <span class="group-icon">📥</span>
-                        Input Values
+                        Attendance Information
                     </h3>
                     <div class="result-item">
-                        <span class="result-label">Attendance Score:</span>
+                        <span class="result-label">Days Present:</span>
                         <span class="result-value" id="displayAttendance">--</span>
                     </div>
+                    <div class="result-item">
+                        <span class="result-label">Total Absences:</span>
+                        <span class="result-value" id="displayAbsences">--</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Excused Absences:</span>
+                        <span class="result-value" id="displayExcused">--</span>
+                    </div>
+                    <div class="result-item highlight">
+                        <span class="result-label">Unexcused Absences:</span>
+                        <span class="result-value" id="displayUnexcused">--</span>
+                    </div>
+                    <div class="result-item important">
+                        <span class="result-label">Attendance Percentage:</span>
+                        <span class="result-value" id="displayAttendanceScore">--</span>
+                    </div>
+                </div>
+                
+                <div class="result-group">
+                    <h3 class="result-group-title">
+                        <span class="group-icon">📝</span>
+                        Lab Work Grades
+                    </h3>
                     <div class="result-item">
                         <span class="result-label">Lab Work 1:</span>
                         <span class="result-value" id="displayLab1">--</span>
