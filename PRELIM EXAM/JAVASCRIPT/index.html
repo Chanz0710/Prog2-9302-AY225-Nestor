@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Record System - Nestor, Chance Darwin S. 25-1855-855</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Student Record System</h1>
+            <div class="subtitle">Nestor, Chance Darwin S. | 25-1855-855</div>
+        </div>
+
+        <div class="main-content">
+            <!-- Alert Messages -->
+            <div id="alertContainer"></div>
+
+            <!-- Input Section -->
+            <div class="input-section">
+                <div class="section-title">Student Information</div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="studentId">Student ID</label>
+                        <input type="text" id="studentId" placeholder="Enter Student ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" placeholder="Enter First Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" placeholder="Enter Last Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="lab1">Lab Work 1</label>
+                        <input type="number" id="lab1" min="0" max="100" placeholder="0-100">
+                    </div>
+                    <div class="form-group">
+                        <label for="lab2">Lab Work 2</label>
+                        <input type="number" id="lab2" min="0" max="100" placeholder="0-100">
+                    </div>
+                    <div class="form-group">
+                        <label for="lab3">Lab Work 3</label>
+                        <input type="number" id="lab3" min="0" max="100" placeholder="0-100">
+                    </div>
+                    <div class="form-group">
+                        <label for="prelim">Prelim Exam</label>
+                        <input type="number" id="prelim" min="0" max="100" placeholder="0-100">
+                    </div>
+                    <div class="form-group">
+                        <label for="attendance">Attendance Grade</label>
+                        <input type="number" id="attendance" min="0" max="100" placeholder="0-100">
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-add" onclick="addRecord()">Add Record</button>
+                    <button class="btn btn-delete" onclick="showDeleteConfirmation()">Delete Record</button>
+                    <button class="btn btn-load" onclick="document.getElementById('csvFile').click()">Load CSV</button>
+                    <input type="file" id="csvFile" accept=".csv" onchange="loadCSV(event)" style="display: none;">
+                </div>
+            </div>
+
+            <!-- Table Section -->
+            <div class="table-section">
+                <div class="table-container">
+                    <table id="studentTable">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Lab Work 1</th>
+                                <th>Lab Work 2</th>
+                                <th>Lab Work 3</th>
+                                <th>Prelim Exam</th>
+                                <th>Attendance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="stats-bar">
+                    <div class="stats-item">
+                        <span>Total Records:</span>
+                        <strong id="recordCount">0</strong>
+                    </div>
+                    <div class="stats-item">
+                        <span>Selected Row:</span>
+                        <strong id="selectedRow">None</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">Confirm Delete</span>
+                <span class="close" onclick="closeDeleteModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this record? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn btn-confirm" onclick="deleteRecord()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
