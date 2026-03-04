@@ -1,11 +1,18 @@
 /**
- * MIDTERM-LAB-1: Product Category Profitability Analysis
- * Course: Prog2-9302
- * Language: JavaScript (Node.js)
- * Dataset: Video Game Sales 2024 (vgchartz-2024.csv)
- *
- * Run: node categoryAnalysis.js
- *      node categoryAnalysis.js path/to/vgchartz-2024.csv
+Product Category Profitability Analysis
+Scenario:
+Company wants to know which category is most profitable.
+
+Requirements:
+Group by product category
+
+Compute:
+Total sales per category
+Average sale per category
+
+Identify:
+Most profitable category
+Least profitable category
  */
 
 const fs   = require("fs");
